@@ -23,8 +23,6 @@ class   classroomserializer(serializers.ModelSerializer):
         fields = '__all__'
         # depth=1
 
-
-
 class divserializer(serializers.ModelSerializer):
     class Meta:
         model = division
