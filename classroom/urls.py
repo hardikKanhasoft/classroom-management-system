@@ -12,9 +12,13 @@ router.register('get_all_std',views.stdViewSet, basename ='std'),
 router.register('get_all_teachers',views.teacherViewSet, basename ='teacher'),
 router.register("get_students_by_std", views.getStudentsByStd_is_monitor, basename='getStudentsByStd_is_monitor'),
 router.register("getStudentsBydiv_is_monitor", views.getStudentsBydiv_is_monitor, basename='getStudentsBydiv_is_monitor'),
-router.register("get_students_by_teacher", views.getStudentsByteacher, basename='get_students_by_teacher'),
 router.register("get_students_by_division", views.getStudentsBydivision, basename='get_students_by_division'),
 router.register("get_students_by_is_monitor", views.getStudentsByis_monitor, basename='get_students_by_is_monitor'),
+router.register("get_div_by_teacher", views.getdivByteacher, basename='get_div_by_teacher'),
+router.register("get_div_by_teacher_name", views.getdivByteacher_name, basename='get_div_by_teacher_name'),
+router.register("get_div_by_teacher_name_is_monitor", views.getStudentsByTeacher_is_monitor
+, basename='get_div_by_teacher_name_is_monitor'),
+
 
 urlpatterns = [ 
     path('admin/', admin.site.urls),

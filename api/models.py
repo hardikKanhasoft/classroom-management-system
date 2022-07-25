@@ -12,6 +12,7 @@ class Std(models.Model):
 
 class division(models.Model):
     div = models.CharField(max_length=20)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name="test_teacher")
     def __str__(self):
         return self.div
             
@@ -22,7 +23,6 @@ class classroom(models.Model):
     email = models.EmailField(max_length=100)
     std = models.ForeignKey(Std, on_delete=models.CASCADE)
     div = models.ForeignKey(division, on_delete= models.CASCADE)
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE,related_name='test_teacher')
     is_monitor = models.BooleanField(default=False)
 
     class Meta:
