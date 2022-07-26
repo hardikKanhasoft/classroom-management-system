@@ -112,14 +112,16 @@ class getdivByteacher_id(viewsets.ModelViewSet):
 
         for i in div_data:
             # x = []
-            print(i,"== i")
+            print(i)
             stu_data = self.queryset.filter(div_id__div= i)
 
             print(stu_data)
 
-            Dict = {
-                'division': 
-            }
+            # Dict = {
+
+            #     'division': 
+
+            # }
 
             # x.append(Dict)
             # print(x)
