@@ -1,8 +1,7 @@
-from re import X
 from .models import Std, Teacher, classroom, division
 from .serializers import classroomserializer,stdserializer,teacherserializer,divserializer
 from rest_framework import viewsets
-
+from rest_framework.response import Response
 # Create your views here.
 
 class classroomModelViewSet(viewsets.ModelViewSet):
@@ -102,23 +101,41 @@ class getdivByteacher(viewsets.ModelViewSet):
 
 
 
-class getdivByteacher_name(viewsets.ModelViewSet):  
-    y = []
+class getdivByteacher_id(viewsets.ModelViewSet):  
     queryset = classroom.objects.all()
     serializer_class = classroomserializer
 
     def get_queryset(self):
+        a = self.request.GET.get('a')
+        div_data = division.objects.filter(teacher_id= a)
+        print(div_data)       
+
+        for i in div_data:
+            # x = []
+            print(i,"== i")
+            stu_data = self.queryset.filter(div_id__div= i)
+
+            print(stu_data)
+
+            Dict = {
+                'division': 
+            }
+
+            # x.append(Dict)
+            # print(x)
+        # for i in a:
+        #     print(i)
+        # return a
         
 
-        teacher_name = self.request.GET.get('teacher_name')
-        if teacher_name:
-            x = []
-            data1 = self.queryset.filter(div__= teacher_name)      
-            data2 = self.queryset.filter(div__teacher=teacher_name)  
-            x.append(data2)
-            print(data1)
-                # return  x
-            return data1
+        # if a:
+        
+        #     # from id 
+        #     # data = self.queryset.filter(div_id__teacher_id=a)
+            
+        #     #from name
+        #     data = self.queryset.filter(div_id__teacher_id__tname=a)
+        #     return data
 
 
 class getStudentsByTeacher_is_monitor(viewsets.ModelViewSet):
@@ -140,5 +157,4 @@ class getStudentsByTeacher_is_monitor(viewsets.ModelViewSet):
         if teacher_name:
                 # data1 = self.queryset.filter(div = t_id)      
             return self.queryset.filter(div__teacher__tname=teacher_name)  
-
         return self.queryset

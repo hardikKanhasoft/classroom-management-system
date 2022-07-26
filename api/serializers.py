@@ -17,14 +17,17 @@ class stdserializer(serializers.ModelSerializer):
         # depth=1
 
 class   classroomserializer(serializers.ModelSerializer):
-    # data = stdserializer(read_only=True, many=True)
+    data = stdserializer(read_only=True, many=True)
     class Meta:
         model = classroom
         fields = '__all__'
-        # depth=1
+        depth = 2
 
 class divserializer(serializers.ModelSerializer):
+    data = classroomserializer(read_only=True, many=True)
     class Meta:
         model = division
         fields = '__all__'
+        depth = 2
+
     

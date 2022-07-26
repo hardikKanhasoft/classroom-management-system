@@ -15,7 +15,7 @@ class division(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name="test_teacher")
     def __str__(self):
         return self.div
-            
+                    
 class classroom(models.Model):
     id = models.IntegerField(primary_key=True)
     roll_no = models.IntegerField()
