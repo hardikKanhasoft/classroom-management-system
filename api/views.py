@@ -1,7 +1,6 @@
 from .models import Std, Teacher, classroom, division
 from .serializers import classroomserializer,stdserializer,teacherserializer,divserializer
 from rest_framework import viewsets
-from rest_framework.response import Response
 # Create your views here.
 
 class classroomModelViewSet(viewsets.ModelViewSet):
@@ -101,34 +100,32 @@ class getdivByteacher(viewsets.ModelViewSet):
 
 
 
-class getdivByteacher_id(viewsets.ModelViewSet):  
+class getdivStudentByteacher_id(viewsets.ModelViewSet):  
     queryset = classroom.objects.all()
     serializer_class = classroomserializer
 
-    def get_queryset(self):
-        a = self.request.GET.get('a')
-        div_data = division.objects.filter(teacher_id= a)
-        print(div_data)       
+    # def get_queryset(self):
 
-        for i in div_data:
-            # x = []
-            print(i)
-            stu_data = self.queryset.filter(div_id__div= i)
-
-            print(stu_data)
-
-            # Dict = {
-
-            #     'division': 
-
-            # }
-
-            # x.append(Dict)
-            # print(x)
-        # for i in a:
-        #     print(i)
-        # return a
+    #     a = self.request.GET.get('a')
+    #     div_data = division.objects.filter(teacher_id= a)
         
+    #     if a:
+    #         dictionary = {}
+    #         for i in div_data:
+    #             x = []
+    #             y = []
+    #             y.append(i)
+    #             stu_data = self.queryset.filter(div_id__div= i)
+    #             for j in stu_data:
+    #                 x.append(j)
+    #             # return stu_data
+    #             # dictionary.add('div_data', y)
+    #             dict = {
+    #                 'div_data': y  ,'student':{'stu_data': x}
+    #             }
+                # print(dict)
+            # print(dictionary,"##################")    
+            # return Response([dict])
 
         # if a:
         
@@ -138,6 +135,63 @@ class getdivByteacher_id(viewsets.ModelViewSet):
         #     #from name
         #     data = self.queryset.filter(div_id__teacher_id__tname=a)
         #     return data
+
+
+
+    def list(self, request, *args, **kwargs):
+        a = self.request.GET.get('a')
+        # div_data = division.objects.filter(teacher_id= a)
+        # print(div_data)
+        # if a:
+        #     dictionary = {}
+        #     x = []
+        #     y = []
+        #     for i in div_data:
+                
+        #         i.__dict__.pop("_state")
+        #         y.append(i.__dict__)
+        #         print("##",y)
+        #         stu_data = classroom.objects.filter(div_id__div= i)
+        #         print(stu_data)
+        #         for j in stu_data:
+        #             j.__dict__.pop("_state")
+        #             x.append(j.__dict__)
+
+        data = {}
+        div_data = division.objects.filter(teacher_id= a)
+        for i in div_data:
+            i.__dict__.pop("_state")
+            stu_data = classroom.objects.filter(div_id__div= i)
+            # print(stu_data)
+            count = 0
+            for j in stu_data:
+                j.__dict__.pop("_state")
+                if data:
+                    if len(data['division']) == 0: 
+                        data["division"] = [i.__dict__]
+                    else:
+                        d = data["division"]
+                        data["division"] = data["division"]+[i.__dict__]
+                        # print("#@#@#",data["division"][0]["student"]+[j.__dict__])
+                        # data["division"][0]["student"] = data["division"][count]["student"]+[j.__dict__]
+                else:
+                    data["division"] = [i.__dict__]
+                    data["division"][0]["student"] = [j.__dict__]
+            print(data)
+            count += 1
+            print(count,"countttttttttttttttttttttttttttttttttttttttttttttttttt")
+
+        # print(self,"self")
+        # print(request, "request")
+        # print(args, "args")
+        # print(kwargs, "kwargs")
+        # dict = {
+        #             'div_data': y ,'student':{'stu_data': x}
+        #         }
+        response = super(getdivStudentByteacher_id, self).list(request, *args, **kwargs)
+        # response.data = {result.pop('stu_data'): result for result in response.data}
+        response.data=data
+        return response
 
 
 class getStudentsByTeacher_is_monitor(viewsets.ModelViewSet):
