@@ -1,3 +1,4 @@
+import pdb
 from .models import Std, Teacher, classroom, division
 from .serializers import classroomserializer,stdserializer,teacherserializer,divserializer
 from rest_framework import viewsets
@@ -159,12 +160,14 @@ class getdivStudentByteacher_id(viewsets.ModelViewSet):
 
         data = {}
         div_data = division.objects.filter(teacher_id= a)
+        import pdb; pdb.set_trace()
         for i in div_data:
             i.__dict__.pop("_state")
             stu_data = classroom.objects.filter(div_id__div= i)
             # print(stu_data)
             count = 0
             for j in stu_data:
+                
                 j.__dict__.pop("_state")
                 if data:
                     if len(data['division']) == 0: 
@@ -173,7 +176,7 @@ class getdivStudentByteacher_id(viewsets.ModelViewSet):
                         d = data["division"]
                         data["division"] = data["division"]+[i.__dict__]
                         # print("#@#@#",data["division"][0]["student"]+[j.__dict__])
-                        # data["division"][0]["student"] = data["division"][count]["student"]+[j.__dict__]
+                        data["division"][0]["student"] = data["division"][count]["student"]+[j.__dict__]
                 else:
                     data["division"] = [i.__dict__]
                     data["division"][0]["student"] = [j.__dict__]
