@@ -7,12 +7,13 @@ class Teacher(models.Model):
 
 class Std(models.Model):
     standard = models.CharField(max_length=100)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name="test_teacher")
+
     def __str__(self):
         return self.standard        
 
 class division(models.Model):
     div = models.CharField(max_length=20)
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name="test_teacher")
     def __str__(self):
         return self.div
                     

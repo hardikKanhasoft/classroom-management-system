@@ -23,4 +23,7 @@ router.register("get_div_by_teacher_name_is_monitor", views.getStudentsByTeacher
 urlpatterns = [ 
     path('admin/', admin.site.urls),
     path('',include(router.urls)),
+    path('get_teacher/',views.getTeacher.as_view(), name ='classroom'),
+    path('get_teacher2/',views.getTeacher2.as_view(), name ='classroom'),
+
 ]
