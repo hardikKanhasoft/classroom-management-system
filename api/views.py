@@ -5,6 +5,8 @@ from .serializers import classroomserializer,stdserializer,teacherserializer,div
 from rest_framework import viewsets
 from rest_framework.response import Response
 import json
+
+from api import serializers
 # Create your views here.
 
 class classroomModelViewSet(viewsets.ModelViewSet):
@@ -214,14 +216,15 @@ class getdivStudentByteacher_id(viewsets.ModelViewSet):
         # return response
 
 
-class getTeacher(APIView):
+class getTeacher1(APIView):
     def get(self, request,*args, **kwargs):
-        # id = self.request.GET.get('id')
+        id = self.request.GET.get('id')
         # emp = classroom.objects.filter(id = id)
         emp = classroom.objects.all()
 
         students = []
         data = {}
+        print(data)
 
         for em in emp:
             teacher = str(em.std.teacher.tname)
@@ -251,73 +254,50 @@ class getTeacher(APIView):
         return Response(data)
 
 
-class getTeacher2(APIView):
-    queryset = Teacher.objects.all()
-    serializer_class = teacherserializer
+class getTeacher(APIView):
     def get(self, request,*args, **kwargs):
-
-        emp = classroom.objects.all()
-        students = []
+ 
+        teacher_data = Teacher.objects.all()
+        standard_data = Std.objects.all()
+        student_data = classroom.objects.all()   
         data = {}
-
-        id = self.request.GET.get('id')
-        if id:
-            da = self.queryset.filter(id = id)
-            print(da, "!!!")
-            
-
-
-
-
-
-
-    # def get_queryset(self):
-    #     t_id = self.request.GET.get('t_id')
-    #     if t_id:
-    #         # data1 = self.queryset.filter(div = t_id)      
-    #         data2 = self.queryset.filter(div__teacher=t_id)     
-    #         print(data2)
-    #     return  data2
-
-        t = Teacher.objects.filter(id=id)
-        # print(t,"teacher ")
         
+        # get teacher
+        teacher = []
+        for i in teacher_data:
+            teacher_details = {
+                "id":i.id,
+                "name":i.tname
+            }
+            # get standard
+            std = []
+            for j in standard_data:
+                if i.id == j.teacher.id:
+                    standard_details = {
+                        "id":j.id,
+                        "standard":j.standard
+                    }
+                    std.append(standard_details)
+                #get student
+                stu = []
+                for k in student_data:
+                    if j.id == k.std.id:
+                        student_details = {
+                            "id": k.id,
+                            "roll_no":k.roll_no ,
+                            "name": k.name,
+                            "email": k.email,
+                            "is_monitor": k.is_monitor,
+                        }
+                        stu.append(student_details)
 
-        s = Std.objects.all()
-        d = division.objects.all()
+                standard_details["students"] = stu
 
-        teacher = str(t)
-        standard = str(s)
-        div = str(d)
+            teacher_details["standards"] = std
+            teacher.append(teacher_details)
 
-        for em in emp:
-            # teacher = str(em.std.teacher.tname)
-            # standard = str(em.std.standard)
-            # div = str(em.div)
-
-            if teacher not in data:     
-                data[teacher] = {}
-
-            if standard not in data[teacher]:
-                data[teacher][standard] = {}
-
-            if div not in  data[teacher][standard]:
-                data[teacher][standard][div] = {}
-
-            if "students" not in data[teacher][standard][div]:
-                data[teacher][standard][div]['students'] = []
-
-            students = data[teacher][standard][div]['students']
-            student_detail = {
-                                "id":em.id, 
-                                "name":em.name,
-                                "roll no":em.roll_no, 
-                                "email":em.email       }
-
-            students.append(student_detail)
+        data['teacher']=teacher   
         return Response(data)
-
-
 
 class getStudentsByTeacher_is_monitor(viewsets.ModelViewSet):
     queryset = classroom.objects.all()

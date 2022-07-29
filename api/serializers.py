@@ -7,7 +7,7 @@ class teacherserializer(serializers.ModelSerializer):
         model = Teacher
         fields = '__all__'
         # exclude=["id"]
-        depth = 2
+        # depth = 2
 
 class stdserializer(serializers.ModelSerializer):
     class Meta: 
@@ -21,13 +21,13 @@ class   classroomserializer(serializers.ModelSerializer):
     class Meta:
         model = classroom
         fields = '__all__'
-        depth = 2
+        # depth = 2
 
 class divserializer(serializers.ModelSerializer):
     data = classroomserializer(read_only=True, many=True)
     class Meta:
         model = division
         fields = '__all__'
-        depth = 2
+        # depth = 2
 
     

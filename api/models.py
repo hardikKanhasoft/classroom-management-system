@@ -2,15 +2,15 @@ from django.db import models
 
 class Teacher(models.Model):
     tname = models.CharField(max_length=100)
-    def __str__(self):
-        return self.tname
+    # def __str__(self):
+    #     return self.tname
 
 class Std(models.Model):
     standard = models.CharField(max_length=100)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name="test_teacher")
 
-    def __str__(self):
-        return self.standard        
+    # def __str__(self):
+    #     return self.standard        
 
 class division(models.Model):
     div = models.CharField(max_length=20)
@@ -29,8 +29,8 @@ class classroom(models.Model):
     class Meta:
         unique_together = ('roll_no', 'std', 'div')
   
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return self.name
 
     def save(self):
         if self.is_monitor:
