@@ -1,12 +1,16 @@
-from cmd import IDENTCHARS
+from multiprocessing import context
 from rest_framework.views import APIView
-from .models import Std, Teacher, classroom, division
-from .serializers import classroomserializer,stdserializer,teacherserializer,divserializer
+from yaml import serialize
+from .models import Std, Teacher, classroom, division, CustomUser
+from .serializers import classroomserializer,stdserializer,teacherserializer,divserializer, CustomUserserializer
 from rest_framework import viewsets
+from django.http import HttpResponse
 from rest_framework.response import Response
-import json
+from django.db import IntegrityError
+from rest_framework import status
 
 from api import serializers
+
 # Create your views here.
 
 class classroomModelViewSet(viewsets.ModelViewSet):
@@ -104,118 +108,6 @@ class getdivByteacher(viewsets.ModelViewSet):
             print(data2)
         return  data2
 
-
-
-class getdivStudentByteacher_id(viewsets.ModelViewSet):  
-    
-    pass
-    # queryset = classroom.objects.all()
-    # serializer_class = classroomserializer
-
-    # def get_queryset(self):
-
-    #     a = self.request.GET.get('a')
-    #     div_data = division.objects.filter(teacher_id= a)
-        
-    #     if a:
-    #         dictionary = {}
-    #         for i in div_data:
-    #             x = []
-    #             y = []
-    #             y.append(i)
-    #             stu_data = self.queryset.filter(div_id__div= i)
-    #             for j in stu_data:
-    #                 x.append(j)
-    #             # return stu_data
-    #             # dictionary.add('div_data', y)
-    #             dict = {
-    #                 'div_data': y  ,'student':{'stu_data': x}
-    #             }
-                # print(dict)
-            # print(dictionary,"##################")    
-            # return Response([dict])
-
-        # if a:
-        
-        #     # from id 
-        #     # data = self.queryset.filter(div_id__teacher_id=a)
-            
-        #     #from name
-        #     data = self.queryset.filter(div_id__teacher_id__tname=a)
-        #     return data
-
-
-
-    # def list(self, request, *args, **kwargs):
-    #     a = self.request.GET.get('a')
-        # div_data = division.objects.filter(teacher_id= a)
-        # print(div_data)
-        # if a:
-        #     dictionary = {}
-        #     x = []
-        #     y = []
-        #     for i in div_data:
-                
-        #         i.__dict__.pop("_state")
-        #         y.append(i.__dict__)
-        #         print("##",y)
-        #         stu_data = classroom.objects.filter(div_id__div= i)
-        #         print(stu_data)
-        #         for j in stu_data:
-        #             j.__dict__.pop("_state")
-        #             x.append(j.__dict__)
-        # import pdb; pdb.set_trace()
-
-        # data = {}
-        
-        # div_data = division.objects.filter(teacher_id= a)
-        # for i in div_data:
-        #     # print(i)
-        #     i.__dict__.pop("_state")
-            
-        #     stu_data = classroom.objects.filter(div_id__div= i)
-        #     # print(stu_data)
-        #     # count = 0
-        #     for j in stu_data:
-        #         # print("jjjjjjjjjjjjjjjjjjjjj",j)
-                
-        #         j.__dict__.pop("_state")
-        #         if data:
-                    
-        #             if len(data['division']) == 0: 
-        #                 data["division"] = [i.__dict__]
-        #             else:
-        #                 d = data["division"]
-        #                 # print([i.__dict__][0]["id"],"[i.__dict__]     ")
-
-        #                 if [i.__dict__][0]["id"] != [i.__dict__][0]["id"]:
-        #                     data["division"] = data["division"]+[i.__dict__] 
-        #                     print(data["division"]+[i.__dict__] ,"")
-                            
-        #                 else:
-        #                     data["division"] = data["division"]
-        #                     # print("#@#@#",data["division"][0]["student"]+[j.__dict__])
-        #                 data["division"][0]["student"] = data["division"][0]["student"]+[j.__dict__]
-        #         else:
-        #             data["division"] = [i.__dict__]
-        #             data["division"][0]["student"] = [j.__dict__]
-        #     print(data)
-            # count += 1
-            # print(count,"counttt")
-
-        # print(self,"self")
-        # print(request, "request")
-        # print(args, "args")
-        # print(kwargs, "kwargs")
-        # dict = {
-        #             'div_data': y ,'student':{'stu_data': x}
-        #         }
-        # response = super(getdivStudentByteacher_id, self).list(request, *args, **kwargs)
-        # # response.data = {result.pop('name'): result for result in response.data}
-        # response.data=data
-        # return response
-
-
 class getTeacher1(APIView):
     def get(self, request,*args, **kwargs):
         id = self.request.GET.get('id')
@@ -253,15 +145,14 @@ class getTeacher1(APIView):
             students.append(student_detail)
         return Response(data)
 
-
 class getTeacher(APIView):
     def get(self, request,*args, **kwargs):
- 
+
         teacher_data = Teacher.objects.all()
         standard_data = Std.objects.all()
         student_data = classroom.objects.all()   
+
         data = {}
-        
         # get teacher
         teacher = []
         for i in teacher_data:
@@ -319,3 +210,67 @@ class getStudentsByTeacher_is_monitor(viewsets.ModelViewSet):
                 # data1 = self.queryset.filter(div = t_id)      
             return self.queryset.filter(div__teacher__tname=teacher_name)  
         return self.queryset
+
+# class Register(APIView):
+#     def post(self, request,*args, **kwargs):    
+#         try:
+#             name = request.data.get('name')
+#             email = request.data.get('email')
+#             password = request.data.get('password')
+#             is_active = request.data.get('is_active')
+#             type = request.data.get('type')
+#             save_user = CustomUser(username=name, email=email, password=password, is_active=is_active, type=type)
+#             save_user.save()
+#             return HttpResponse ("data created")
+#         except IntegrityError as e:
+#             return HttpResponse ("email or username already exists")
+
+
+class Register(APIView):
+    
+    def post(self, request,*args, **kwargs):    
+        # import pdb; pdb.set_trace()
+        serializer_obj = CustomUserserializer(data=request.data)
+        print(request.data)
+        if serializer_obj.is_valid():
+            print(serializer_obj.is_valid())
+            serializer_obj.save()
+            return Response({"msg":'Data Created'})
+        else: 
+            return Response({"msg":serializer_obj.errors})
+
+class SetPass(APIView):
+    
+    def get(self, request):
+        
+        id=self.request.GET.get("id")
+        try: 
+            if id is not None:
+                # import pdb; pdb.set_trace()
+                try:
+                    user =CustomUser.objects.get(id=id)
+                    serializer = CustomUserserializer(user)
+                    # return Response(serializer.data)
+
+                except CustomUser.DoesNotExist :
+                    return Response({"msg":'User Does Not Exis'})
+            return Response(serializer.data)
+        except :
+            user = CustomUser.objects.all()
+            serializer = CustomUserserializer(user, many=True)
+            return Response(serializer.data)
+    
+class SetPassword(APIView):
+    def patch(self, request):
+        id=self.request.GET.get("id")
+        user = CustomUser.objects.get(id=id)
+        serializer = CustomUserserializer(user, data=request.data, partial=True)
+        a = request.data['password']
+        b = request.data['confirm password']
+        if a!=b:
+            return Response({'msg':"confirm password don't match with password"})
+        else:       
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"msg":'Success'})
+            return Response({"msg":'Not Success'})
