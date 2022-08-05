@@ -125,3 +125,15 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'api.CustomUser'
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'test123.kanhasoft@gmail.com'
+# EMAIL_HOST_PASSWORD = '2022@Hardik'
+# EMAIL_USE_TLS = True
+
+
+#  s key = 0f57730f537cee90c8587cc25bdec296
+# api key = 70a530a1f41ccfbfd0f94bf810962a81

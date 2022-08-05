@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+class Agenda(models.Model):
+    start_time = models.DateTimeField()
+    end_time  = models.DateTimeField()
+    agenda = models.CharField(max_length=200)
 
 class CustomUser(AbstractUser):
     username = models.CharField(max_length=128, unique=True)

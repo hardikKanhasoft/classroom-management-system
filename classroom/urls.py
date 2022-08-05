@@ -22,13 +22,14 @@ router.register("get_div_by_teacher_name_is_monitor", views.getStudentsByTeacher
 , basename='get_div_by_teacher_name_is_monitor'),
 
 
-
 urlpatterns = [ 
     path('admin/', admin.site.urls),
     path('',include(router.urls)),
     path('get_teacher1/',views.getTeacher1.as_view(), name ='classroom'),
     path('get_teacher/',views.getTeacher.as_view(), name ='classroom'),
     path('register/',views.Register.as_view(), name ='register'),
-    path('set_pass/',views.SetPass.as_view(), name ='setpassword'),
-    path('set_password/',views.SetPassword.as_view(), name ='setpass'),
+    path('get_user_data/',views.GetUser.as_view(), name ='getuser'),
+    path('set_password/',views.SetPassword.as_view(), name ='setpassword'),
+    path('send_mail/',views.Mail.as_view(), name ='sendmail'),   
+    path('agenda/',views.Agendas.as_view(), name = 'agenda'),
 ]

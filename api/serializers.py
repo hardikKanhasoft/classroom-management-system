@@ -1,4 +1,4 @@
-from .models import CustomUser, classroom, Std, Teacher ,division
+from .models import Agenda, CustomUser, classroom, Std, Teacher ,division
 from rest_framework import serializers
 
 class teacherserializer(serializers.ModelSerializer):
@@ -32,8 +32,12 @@ class divserializer(serializers.ModelSerializer):
 
 
 class CustomUserserializer(serializers.ModelSerializer):
-    
     class Meta:
         model = CustomUser
         fields = '__all__'
         # depth = 2
+
+class Agendaserializer(serializers.ModelSerializer):
+    class Meta:
+        model = Agenda
+        fields = '__all__'
