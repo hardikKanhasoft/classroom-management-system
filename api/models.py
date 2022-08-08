@@ -7,6 +7,11 @@ class Agenda(models.Model):
     end_time  = models.DateTimeField()
     agenda = models.CharField(max_length=200)
 
+class OpAgenda(models.Model):
+    agenda = models.CharField(max_length=200)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+
 class CustomUser(AbstractUser):
     username = models.CharField(max_length=128, unique=True)
     email = models.EmailField(unique=True)

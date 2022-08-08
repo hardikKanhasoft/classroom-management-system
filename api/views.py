@@ -1,13 +1,12 @@
 from datetime import datetime
-from itertools import count
 from rest_framework.views import APIView
-from .models import Std, Teacher, classroom, division, CustomUser, Agenda
+from .models import OpAgenda, Std, Teacher, classroom, division, CustomUser, Agenda
 from .serializers import Agendaserializer, classroomserializer, stdserializer, teacherserializer, divserializer, CustomUserserializer
 from rest_framework import viewsets
 from rest_framework.response import Response
 from mailjet_rest import Client
 
-from api import serializers
+
 
 class classroomModelViewSet(viewsets.ModelViewSet):
     queryset = classroom.objects.all()
@@ -352,40 +351,66 @@ class Agendas(APIView):
             #difference between time
             start = serializer_obj.data['start_time']
             end = serializer_obj.data['end_time']
-            start_data = datetime.strptime(start,"%Y-%m-%dT%H:%M:%SZ")
-            end_data = datetime.strptime(end,"%Y-%m-%dT%H:%M:%SZ")
-            diff = end_data - start_data
+            start_time = datetime.strptime(start,"%Y-%m-%dT%H:%M:%SZ")
+            end_time = datetime.strptime(end,"%Y-%m-%dT%H:%M:%SZ")
+            total_time = end_time - start_time
+            print(total_time,"total_time")
             
-            #how much taskas
+            #count of tasks
             data = serializer_obj.data['agenda'].split(",") 
-            len_data = (len(data))     
+            len_agenda = (len(data))   
+            print(len_agenda,"len_agenda")  
 
             #task time
-            task_time = diff/len_data     
+            task_time = total_time/len_agenda
+            print(task_time,"task_time")
+
+            #lists
+            test_agenda = []
+            test1 = []
+            test2 = []
+
+            # listing_agendas
+            for i in data:
+                test_agenda.append(i)
+
+            #get individual agenda's start-time 
+            list_time2 = []            
+            b = end_time
+            while b>start_time:
+                b = b-task_time
+                list_time2.append(b)
+            for i in range(len_agenda, 0, -1):
+                test1.append(list_time2[i-1])
+              
+            #get individual agenda's end-time  
+            a = start_time
+            while a<end_time:
+                a = a + task_time
+                test2.append(a)
             
-            #calculating time
-            seconds = task_time.total_seconds()            
-            hours = seconds // 3600
-            minutes = (seconds % 3600) // 60
-            seconds = seconds % 60
-
-            time = f"{'hours',hours}:{'minutes',minutes}:{'seconds',seconds}"
-           
-            print(220//3600,"floor")
-            print(3600//3600,"floor2")
-
             dictionary = {}
             list_data= []
-            for i in data:
-                print(task_time,"to",i)
+
+            for f in range(len_agenda):               
                 d = {
-                    "agenda":i,
-                    "time":time
+                    "agenda":test_agenda[f],
+                    "start_time":test1[f],
+                    "end_time":test2[f]
                 }
-                list_data.append(d)
-            dictionary['list'] = list_data
+                list_data.append(d)           
+            dictionary = list_data
+
+            #saving dictionary 
+            for i in dictionary:
+                agenda = i.get("agenda")
+                start_time = i.get("start_time")
+                end_time = i.get("end_time")
+                OpAgenda.objects.create(agenda=agenda, start_time=start_time, end_time=end_time)
+
             return Response(dictionary)
         else :
             return Response({'msg':serializer_obj.errors})
         
 
+            
