@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from api import views
+from api.auth import CustomAuthToken
 # from django.conf.urls import url
 
 
@@ -31,5 +32,7 @@ urlpatterns = [
     path('get_user_data/',views.GetUser.as_view(), name ='getuser'),
     path('set_password/',views.SetPassword.as_view(), name ='setpassword'),
     path('send_mail/',views.Mail.as_view(), name ='sendmail'),   
+    path('tryagenda/',views.TryAgendas.as_view(), name = 'tryagenda'),
     path('agenda/',views.Agendas.as_view(), name = 'agenda'),
+    path('gettoken/',CustomAuthToken.as_view())
 ]

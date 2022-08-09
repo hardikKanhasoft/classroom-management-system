@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
 class Agenda(models.Model):
     start_time = models.DateTimeField()
@@ -8,6 +12,7 @@ class Agenda(models.Model):
     agenda = models.CharField(max_length=200)
 
 class OpAgenda(models.Model):
+    user = models.CharField(max_length=200)
     agenda = models.CharField(max_length=200)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
@@ -53,4 +58,10 @@ class classroom(models.Model):
                 pass
         super(classroom, self).save()
 
+# Authentication
+#this signal is create auth Token for user
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
 

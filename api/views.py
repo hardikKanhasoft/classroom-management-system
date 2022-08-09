@@ -5,7 +5,8 @@ from .serializers import Agendaserializer, classroomserializer, stdserializer, t
 from rest_framework import viewsets
 from rest_framework.response import Response
 from mailjet_rest import Client
-
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 class classroomModelViewSet(viewsets.ModelViewSet):
@@ -152,10 +153,10 @@ class getTeacher(APIView):
             }
             # get standard
             std = []
-            standard_data = Std.objects.filter(id = i.id)
+            standard_data = Std.objects.filter(id=i.id)
             for j in standard_data:
-               
-            # if i.id == j.teacher.id:
+
+                # if i.id == j.teacher.id:
                 standard_details = {
                     "id": j.id,
                     "standard": j.standard
@@ -163,8 +164,8 @@ class getTeacher(APIView):
                 std.append(standard_details)
                 # get student
                 stu = []
-                student_data = classroom.objects.filter(id = j.id)
-                for k in student_data:     
+                student_data = classroom.objects.filter(id=j.id)
+                for k in student_data:
                     # if j.id == k.std.id:
                     student_details = {
                         "id": k.id,
@@ -225,7 +226,8 @@ class Register(APIView):
         if serializer_obj.is_valid():
             serializer_obj.save()
 
-            latest_id = CustomUser.objects.latest('username').id
+            latest_id = CustomUser.objects.latest('id').id
+            print(latest_id, "latest_id")
             # for email send
             api_key = '70a530a1f41ccfbfd0f94bf810962a81'
             api_secret = '0f57730f537cee90c8587cc25bdec296'
@@ -342,30 +344,36 @@ class Mail(APIView):
         print(result.json())
         return Response({"msg": 'Success'})
 
-class Agendas(APIView):
+class TryAgendas(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
-        serializer_obj = Agendaserializer(data = request.data)
+        # get authenticated User using Token
+        user = request.auth.user
+
+        serializer_obj = Agendaserializer(data=request.data)
         if serializer_obj.is_valid():
             serializer_obj.save()
 
-            #difference between time
+            # difference between time
             start = serializer_obj.data['start_time']
             end = serializer_obj.data['end_time']
-            start_time = datetime.strptime(start,"%Y-%m-%dT%H:%M:%SZ")
-            end_time = datetime.strptime(end,"%Y-%m-%dT%H:%M:%SZ")
+            start_time = datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ")
+            end_time = datetime.strptime(end, "%Y-%m-%dT%H:%M:%SZ")
             total_time = end_time - start_time
-            print(total_time,"total_time")
-            
-            #count of tasks
-            data = serializer_obj.data['agenda'].split(",") 
-            len_agenda = (len(data))   
-            print(len_agenda,"len_agenda")  
+            print(total_time, "total_time")
 
-            #task time
+            # count of tasks
+            data = serializer_obj.data['agenda'].split(",")
+            len_agenda = (len(data))
+            print(len_agenda, "len_agenda")
+
+            # task time
             task_time = total_time/len_agenda
-            print(task_time,"task_time")
+            print(task_time, "task_time")
 
-            #lists
+            # lists
             test_agenda = []
             test1 = []
             test2 = []
@@ -374,43 +382,111 @@ class Agendas(APIView):
             for i in data:
                 test_agenda.append(i)
 
-            #get individual agenda's start-time 
-            list_time2 = []            
+            # get individual agenda's start-time
+            list_time2 = []
             b = end_time
-            while b>start_time:
+            while b > start_time:
                 b = b-task_time
+                print(b, "b")
                 list_time2.append(b)
             for i in range(len_agenda, 0, -1):
                 test1.append(list_time2[i-1])
-              
-            #get individual agenda's end-time  
+
+            # get individual agenda's end-time
             a = start_time
-            while a<end_time:
+            while a < end_time:
                 a = a + task_time
                 test2.append(a)
-            
-            dictionary = {}
-            list_data= []
 
-            for f in range(len_agenda):               
+            dictionary = {}
+            list_data = []
+
+            for f in range(len_agenda):
                 d = {
-                    "agenda":test_agenda[f],
-                    "start_time":test1[f],
-                    "end_time":test2[f]
+                    "agenda": test_agenda[f],
+                    "start_time": test1[f],
+                    "end_time": test2[f]
                 }
-                list_data.append(d)           
+                list_data.append(d)
             dictionary = list_data
 
-            #saving dictionary 
+            # saving dictionary
+
             for i in dictionary:
                 agenda = i.get("agenda")
                 start_time = i.get("start_time")
                 end_time = i.get("end_time")
-                OpAgenda.objects.create(agenda=agenda, start_time=start_time, end_time=end_time)
+                OpAgenda.objects.create(agenda=agenda, start_time=start_time, end_time=end_time, user=user)
 
             return Response(dictionary)
-        else :
-            return Response({'msg':serializer_obj.errors})
-        
+        else:
+            return Response({'msg': serializer_obj.errors})
 
-            
+
+# logic of agendas
+# createDefaulAgenda = (difference: number, start_time: string, user_id: string, session_id: number, agenda: any) = > {
+#     let agendaData = []
+#     for (let index=0
+#          index < agenda.length
+#          index++) {
+#         if (index > 0) {
+#         }
+#         let differences = difference * (index + 1)
+#         let obj = {
+#             marker_title: !!agenda[index].title ? agenda[index].title: agenda[index],
+#             start_marker_at: index > 0 ? moment(moment.unix(moment(start_time).unix()).add(differences - difference, 'seconds')).utc().format("YYYY-MM-DD HH:mm:ss"): moment(moment.unix(moment(start_time).unix())).utc().format("YYYY-MM-DD HH:mm:ss"),
+#             end_marker_at: moment(moment.unix(moment(start_time).unix()).add(differences, 'seconds')).utc().format("YYYY-MM-DD HH:mm:ss"),
+#             marker_type: 1,
+#             marker_user_id: user_id,
+#             session_id: session_id
+#         }
+#         agendaData.push(obj)
+#     }
+#     return agendaData
+# }
+class Agendas(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def post(self, request):
+        user = request.auth.user
+        serializer_obj = Agendaserializer(data=request.data)
+        if serializer_obj.is_valid():
+            serializer_obj.save()
+
+            # difference between time
+            start = serializer_obj.data['start_time']
+            end = serializer_obj.data['end_time']
+            start_time = datetime.strptime(start, "%Y-%m-%dT%H:%M:%SZ")
+            end_time = datetime.strptime(end, "%Y-%m-%dT%H:%M:%SZ")
+            total_time = end_time - start_time
+
+            agenda = serializer_obj.data['agenda'].split(",")
+            len_agenda = (len(agenda))
+            difference = total_time/len_agenda
+            agenda_list = []
+            agenda_dict = {}
+            u = user
+            index = 0
+            while index < len_agenda:          
+                differences = difference * (index + 1)
+                time1 = start_time + (differences-difference)
+                time2 = start_time + differences
+                d = {
+                    "agenda":agenda[index],
+                    "start_time":time1,
+                    "end_time":time2
+                }
+
+                agenda_list.append(d)               
+                agenda_dict = agenda_list
+                index += 1 
+            for i in agenda_dict:
+                agenda = i.get("agenda")
+                start_time = i.get("start_time")
+                end_time = i.get("end_time")
+                OpAgenda.objects.create(agenda=agenda, start_time=start_time, end_time=end_time, user=user)
+            return Response(agenda_dict)
+        else:
+            return Response({'msg': serializer_obj.errors})                
+                
+                

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import  Std, Teacher, classroom, division
+from .models import  Std, Teacher, classroom, division,CustomUser
 # Register your models here.
 from .models import Agenda
 
@@ -20,7 +20,9 @@ class TeacherAdmin(admin.ModelAdmin):
 class divisionAdmin(admin.ModelAdmin):
     pass
 
-
+@admin.register(CustomUser)
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ['id','username','email','type']     
 
 @admin.register(Agenda)
 class AgendaAdmin(admin.ModelAdmin):
