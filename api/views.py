@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 
 class classroomModelViewSet(viewsets.ModelViewSet):
     queryset = classroom.objects.all()
+
     serializer_class = classroomserializer
 
 class StudentViewSet(viewsets.ModelViewSet):
