@@ -132,16 +132,12 @@ class getTeacher1(APIView):
 
             if teacher not in data:
                 data[teacher] = {}
-
             if standard not in data[teacher]:
                 data[teacher][standard] = {}
-
             if div not in data[teacher][standard]:
                 data[teacher][standard][div] = {}
-
             if "students" not in data[teacher][standard][div]:
                 data[teacher][standard][div]["students"] = []
-
             students = data[teacher][standard][div]["students"]
             student_detail = {
                 "id": em.id,
